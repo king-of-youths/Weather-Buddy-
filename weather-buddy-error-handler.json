@@ -1,0 +1,45 @@
+{
+  "name": "Weather Buddy Error Handler",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "e01",
+      "name": "Error Trigger",
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "\n// Logs a sanitised summary to the n8n/Docker logs. Nothing is sent to Telegram users.\nconst e = $input.first().json;\nconst info = {\n  workflow: e.workflow && e.workflow.name,\n  failedNode: e.execution && e.execution.lastNodeExecuted,\n  message: String((e.execution && e.execution.error && e.execution.error.message) || 'unknown').slice(0, 300),\n  executionId: e.execution && e.execution.id\n};\nconsole.log('[WeatherBuddy][ErrorWorkflow]', JSON.stringify(info));\nreturn [{ json: info }];\n"
+      },
+      "id": "e02",
+      "name": "Log Error",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "Error Trigger": {
+      "main": [
+        [
+          {
+            "node": "Log Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
